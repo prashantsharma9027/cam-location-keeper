@@ -68,6 +68,7 @@ const Gallery: React.FC = () => {
                 onClick={() => handlePhotoClick(photo.id)}
               />
               
+              
               <CardContent className="p-4">
                 <h3 className="font-semibold truncate">{photo.title}</h3>
                 <p className="text-sm text-muted-foreground">
