@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Camera, MapPin, Trash2, Edit } from 'lucide-react';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
@@ -38,21 +37,16 @@ const Gallery: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-semibold">Brick Samples Gallery</h2>
-        <Button onClick={() => setActiveView('camera')} className="flex items-center gap-2">
-          <Camera size={18} />
-          <span>Capture New Sample</span>
-        </Button>
-      </div>
-
       {photos.length === 0 ? (
-        <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed">
+        <div className="text-center py-16 bg-white rounded-lg border-2 border-dashed">
           <Camera size={48} className="mx-auto text-gray-400 mb-4" />
-          <h3 className="text-xl font-semibold mb-2">No Samples Yet</h3>
-          <p className="text-gray-600 mb-4">Start by capturing your first brick sample.</p>
-          <Button onClick={() => setActiveView('camera')}>
-            Capture Sample
+          <h3 className="text-xl font-semibold mb-2">No Brick Samples Yet</h3>
+          <p className="text-gray-600 mb-6 max-w-md mx-auto">
+            Start by capturing photos of brick samples to document the effects of chemical treatments and efflorescence patterns.
+          </p>
+          <Button onClick={() => setActiveView('camera')} className="flex items-center gap-2">
+            <Camera size={18} />
+            <span>Capture First Sample</span>
           </Button>
         </div>
       ) : (
