@@ -5,7 +5,7 @@ export interface PhotoData {
   location: {
     latitude: number;
     longitude: number;
-  };
+  } | null;
   timestamp: number;
   title: string;
 }

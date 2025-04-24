@@ -16,18 +16,15 @@ const Gallery: React.FC = () => {
   const [editingPhoto, setEditingPhoto] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState('');
 
-  // Handle photo click to view full image
   const handlePhotoClick = (id: string) => {
     setSelectedPhoto(id);
   };
 
-  // Handle photo edit click
   const handleEditClick = (id: string, currentTitle: string) => {
     setEditingPhoto(id);
     setEditTitle(currentTitle);
   };
 
-  // Handle photo update
   const handleUpdatePhoto = () => {
     if (editingPhoto) {
       updatePhoto(editingPhoto, { title: editTitle });
@@ -35,66 +32,59 @@ const Gallery: React.FC = () => {
     }
   };
 
-  // Handle open location in Google Maps
   const handleOpenLocation = (latitude: number, longitude: number) => {
     window.open(getGoogleMapsUrl(latitude, longitude), '_blank');
   };
 
-  // Return to camera view
-  const handleReturnToCamera = () => {
-    setActiveView('camera');
-  };
-
   return (
-    <div className="container mx-auto px-4 py-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Photo Gallery</h1>
-        <Button onClick={handleReturnToCamera} className="flex items-center gap-2">
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-semibold">Brick Samples Gallery</h2>
+        <Button onClick={() => setActiveView('camera')} className="flex items-center gap-2">
           <Camera size={18} />
-          <span>Camera</span>
+          <span>Capture New Sample</span>
         </Button>
       </div>
 
       {photos.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          <div className="bg-muted rounded-full p-6 mb-4">
-            <Camera size={48} className="text-muted-foreground" />
-          </div>
-          <h2 className="text-xl font-semibold mb-2">No photos yet</h2>
-          <p className="text-muted-foreground mb-4">
-            Capture your first photo with location by using the camera.
-          </p>
-          <Button onClick={handleReturnToCamera}>
-            Open Camera
+        <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed">
+          <Camera size={48} className="mx-auto text-gray-400 mb-4" />
+          <h3 className="text-xl font-semibold mb-2">No Samples Yet</h3>
+          <p className="text-gray-600 mb-4">Start by capturing your first brick sample.</p>
+          <Button onClick={() => setActiveView('camera')}>
+            Capture Sample
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {photos.map((photo) => (
-            <Card key={photo.id} className="overflow-hidden">
+            <Card key={photo.id} className="overflow-hidden hover:shadow-lg transition-shadow">
               <div 
-                className="w-full h-48 bg-cover bg-center cursor-pointer" 
+                className="aspect-video bg-cover bg-center cursor-pointer" 
                 style={{ backgroundImage: `url(${photo.imageData})` }}
                 onClick={() => handlePhotoClick(photo.id)}
               />
               
               <CardContent className="p-4">
-                <h3 className="font-medium truncate">{photo.title}</h3>
-                <p className="text-sm text-muted-foreground mb-2">
+                <h3 className="font-semibold truncate">{photo.title}</h3>
+                <p className="text-sm text-muted-foreground">
                   {formatDate(photo.timestamp)}
                 </p>
                 
-                <div 
-                  className="preview-map mt-2 mb-2 cursor-pointer border flex items-center justify-center"
-                  onClick={() => handleOpenLocation(photo.location.latitude, photo.location.longitude)}
-                >
-                  <div className="flex items-center gap-2 text-primary">
-                    <MapPin size={18} />
-                    <span className="text-sm">
-                      {photo.location.latitude.toFixed(6)}, {photo.location.longitude.toFixed(6)}
-                    </span>
-                  </div>
-                </div>
+                {photo.location ? (
+                  <Button
+                    variant="outline"
+                    className="mt-3 w-full"
+                    onClick={() => handleOpenLocation(photo.location.latitude, photo.location.longitude)}
+                  >
+                    <MapPin size={16} className="mr-2" />
+                    View Location
+                  </Button>
+                ) : (
+                  <p className="text-sm text-muted-foreground mt-3 text-center py-2 bg-gray-50 rounded">
+                    Location not available
+                  </p>
+                )}
               </CardContent>
               
               <CardFooter className="px-4 py-3 border-t flex justify-between">
@@ -118,10 +108,9 @@ const Gallery: React.FC = () => {
         </div>
       )}
 
-      {/* Full Image Dialog */}
       {selectedPhoto && (
         <Dialog open={!!selectedPhoto} onOpenChange={() => setSelectedPhoto(null)}>
-          <DialogContent className="max-w-3xl w-full p-0 overflow-hidden">
+          <DialogContent className="max-w-4xl w-full p-0">
             <ScrollArea className="max-h-[80vh]">
               <img 
                 src={photos.find(p => p.id === selectedPhoto)?.imageData} 
@@ -133,20 +122,20 @@ const Gallery: React.FC = () => {
         </Dialog>
       )}
 
-      {/* Edit Dialog */}
       {editingPhoto && (
         <Dialog open={!!editingPhoto} onOpenChange={() => setEditingPhoto(null)}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Edit Photo Details</DialogTitle>
+              <DialogTitle>Edit Sample Details</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="title">Sample Description</Label>
                 <Input
                   id="title"
                   value={editTitle}
                   onChange={(e) => setEditTitle(e.target.value)}
+                  placeholder="e.g., Clay Brick Sample - Day 7"
                 />
               </div>
             </div>

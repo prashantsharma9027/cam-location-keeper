@@ -16,10 +16,7 @@ const CameraComponent: React.FC = () => {
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
 
   useEffect(() => {
-    // Start camera on component mount
     startCamera({ facingMode });
-    
-    // Clean up on component unmount
     return () => {
       stopCamera();
     };
@@ -27,27 +24,30 @@ const CameraComponent: React.FC = () => {
 
   const handleCapture = async () => {
     try {
-      // Capture photo
       const photoData = await capturePhoto();
       if (!photoData) {
         return;
       }
 
-      // Get location
-      const location = await getCurrentLocation();
-      if (!location) {
-        toast.error('Unable to get your location. Please check permissions and try again.');
-        return;
-      }
+      // Try to get location, but don't block if unavailable
+      const location = await getCurrentLocation().catch(() => null);
 
-      // Add to context
+      // Add photo with or without location
       addPhoto({
         id: generateId(),
         imageData: photoData.dataUrl,
-        location,
+        location: location || null,
         timestamp: Date.now(),
-        title: `Photo ${new Date().toLocaleString()}`,
+        title: `Brick Sample ${new Date().toLocaleString()}`,
       });
+
+      // Show appropriate toast message
+      if (!location) {
+        toast.warning('Photo saved without location data');
+      } else {
+        toast.success('Photo captured with location');
+      }
+
     } catch (error) {
       console.error('Error capturing photo:', error);
       toast.error('Failed to capture photo. Please try again.');
@@ -63,7 +63,14 @@ const CameraComponent: React.FC = () => {
   const isLoading = cameraLoading || locationLoading;
 
   return (
-    <div className="flex flex-col items-center justify-center w-full max-w-lg mx-auto">
+    <div className="flex flex-col items-center justify-center w-full max-w-2xl mx-auto space-y-6">
+      <div className="w-full space-y-4">
+        <h2 className="text-2xl font-semibold text-center">Capture Brick Sample</h2>
+        <p className="text-muted-foreground text-center">
+          Position the brick sample in frame and ensure good lighting
+        </p>
+      </div>
+
       <Card className="w-full overflow-hidden bg-black relative">
         <div className="relative w-full h-0 pb-[125%] bg-gray-900">
           <video
@@ -74,7 +81,7 @@ const CameraComponent: React.FC = () => {
             muted
           />
           {isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center">
+            <div className="absolute inset-0 flex items-center justify-center bg-black/50">
               <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
             </div>
           )}
@@ -82,7 +89,7 @@ const CameraComponent: React.FC = () => {
         <canvas ref={photoRef} className="hidden" />
       </Card>
 
-      <div className="mt-6 w-full flex flex-col items-center space-y-4">
+      <div className="w-full flex flex-col items-center space-y-4">
         <div className="flex items-center justify-center space-x-4">
           <Button
             variant="outline"
