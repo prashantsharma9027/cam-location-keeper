@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { AppContextType, PhotoData } from '../types';
 import { toast } from '../components/ui/sonner';
@@ -8,8 +7,10 @@ const initialState: AppContextType = {
   addPhoto: () => {},
   updatePhoto: () => {},
   deletePhoto: () => {},
-  activeView: 'camera',
+  activeView: 'home',
   setActiveView: () => {},
+  cameraMode: 'home',
+  setCameraMode: () => {},
 };
 
 const PhotoContext = createContext<AppContextType>(initialState);
@@ -18,7 +19,8 @@ export const usePhotoContext = () => useContext(PhotoContext);
 
 export const PhotoProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [photos, setPhotos] = useState<PhotoData[]>([]);
-  const [activeView, setActiveView] = useState<'camera' | 'gallery'>('camera');
+  const [activeView, setActiveView] = useState<'camera' | 'gallery' | 'home'>('home');
+  const [cameraMode, setCameraMode] = useState<'home' | 'active'>('home');
 
   // Load photos from localStorage on initial render
   useEffect(() => {
@@ -64,7 +66,9 @@ export const PhotoProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         updatePhoto, 
         deletePhoto,
         activeView,
-        setActiveView
+        setActiveView,
+        cameraMode,
+        setCameraMode
       }}
     >
       {children}

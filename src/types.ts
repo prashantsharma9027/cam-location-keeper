@@ -1,4 +1,3 @@
-
 export interface PhotoData {
   id: string;
   imageData: string;
@@ -15,6 +14,8 @@ export interface AppContextType {
   addPhoto: (photo: PhotoData) => void;
   updatePhoto: (id: string, updatedPhoto: Partial<PhotoData>) => void;
   deletePhoto: (id: string) => void;
-  activeView: 'camera' | 'gallery';
-  setActiveView: (view: 'camera' | 'gallery') => void;
+  activeView: 'camera' | 'gallery' | 'home';
+  setActiveView: (view: 'camera' | 'gallery' | 'home') => void;
+  cameraMode: 'home' | 'active';
+  setCameraMode: (mode: 'home' | 'active') => void;
 }

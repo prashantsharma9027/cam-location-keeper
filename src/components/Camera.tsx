@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -6,21 +5,25 @@ import { useCamera } from '@/hooks/useCamera';
 import { useLocation } from '@/hooks/useLocation';
 import { usePhotoContext } from '@/context/PhotoContext';
 import { generateId } from '@/utils/helpers';
-import { Camera, Image } from 'lucide-react';
+import { Camera, Image, ArrowLeft } from 'lucide-react';
 import { toast } from '@/components/ui/sonner';
+import HomeScreen from './HomeScreen';
 
 const CameraComponent: React.FC = () => {
   const { videoRef, photoRef, startCamera, stopCamera, capturePhoto, isLoading: cameraLoading, isCameraActive } = useCamera();
   const { getCurrentLocation, isLoading: locationLoading } = useLocation();
-  const { addPhoto, setActiveView } = usePhotoContext();
+  const { addPhoto, setActiveView, cameraMode, setCameraMode } = usePhotoContext();
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
 
   useEffect(() => {
-    startCamera({ facingMode });
-    return () => {
-      stopCamera();
-    };
-  }, [startCamera, stopCamera, facingMode]);
+    // Only start camera if in active recording mode
+    if (cameraMode === 'active') {
+      startCamera({ facingMode });
+      return () => {
+        stopCamera();
+      };
+    }
+  }, [startCamera, stopCamera, facingMode, cameraMode]);
 
   const handleCapture = async () => {
     try {
@@ -62,17 +65,36 @@ const CameraComponent: React.FC = () => {
 
   const isLoading = cameraLoading || locationLoading;
 
+  // If camera mode is not active, show HomeScreen
+  if (cameraMode !== 'active') {
+    return <HomeScreen />;
+  }
+
   return (
-    <div className="flex flex-col items-center justify-center w-full max-w-2xl mx-auto space-y-6">
-      <div className="w-full space-y-4">
-        <h2 className="text-2xl font-semibold text-center">Capture Brick Sample</h2>
-        <p className="text-muted-foreground text-center">
-          Position the brick sample in frame and ensure good lighting
-        </p>
+    <div className="flex flex-col items-center justify-center w-full max-w-2xl mx-auto space-y-6 px-4 sm:px-6">
+      <div className="w-full flex items-center justify-between mb-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="flex items-center"
+          onClick={() => {
+            setCameraMode('home');
+            stopCamera();
+          }}
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          <span className="hidden sm:inline">Back</span>
+        </Button>
+        <h2 className="text-xl sm:text-2xl font-semibold text-center flex-1">Capture Brick Sample</h2>
+        <div className="w-[60px]"></div> {/* Spacer to balance the layout */}
       </div>
 
+      <p className="text-muted-foreground text-center text-sm sm:text-base">
+        Position the brick sample in frame and ensure good lighting
+      </p>
+
       <Card className="w-full overflow-hidden bg-black relative">
-        <div className="relative w-full h-0 pb-[125%] bg-gray-900">
+        <div className="relative w-full h-0 pb-[125%] sm:pb-[100%] bg-gray-900">
           <video
             ref={videoRef}
             className="absolute inset-0 w-full h-full object-cover"
@@ -90,11 +112,12 @@ const CameraComponent: React.FC = () => {
       </Card>
 
       <div className="w-full flex flex-col items-center space-y-4">
-        <div className="flex items-center justify-center space-x-4">
+        <div className="flex items-center justify-center space-x-6">
           <Button
             variant="outline"
             className="rounded-full w-12 h-12 p-0"
             onClick={toggleCamera}
+            title="Switch camera"
           >
             <Camera className="h-6 w-6" />
           </Button>
@@ -102,14 +125,17 @@ const CameraComponent: React.FC = () => {
           <Button 
             onClick={handleCapture}
             disabled={!isCameraActive || isLoading}
-            className="capture-button"
+            className="capture-button rounded-full bg-primary text-white w-16 h-16 p-0 hover:bg-primary/90"
             aria-label="Take photo"
-          />
+          >
+            <div className="w-12 h-12 rounded-full border-2 border-white"></div>
+          </Button>
           
           <Button
             variant="outline"
             className="rounded-full w-12 h-12 p-0"
             onClick={() => setActiveView('gallery')}
+            title="View gallery"
           >
             <Image className="h-6 w-6" />
           </Button>
