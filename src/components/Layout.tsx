@@ -18,7 +18,8 @@ const Layout: React.FC = () => {
                 Mini Project CECT-108
               </div>
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold bg-clip-text text-transparent bg-secondary">
-                Effects of chemical on various bricks : Review
+              Efflorescence in Bricks: From Scientific
+              Phenomenon to Artistic Inspiration
               </h1>
               <p className="text-xl text-blue-100">Presentation on Brick Efflorescence Study</p>
               
@@ -36,7 +37,7 @@ const Layout: React.FC = () => {
               
               <div className="pt-4 text-sm text-blue-200 space-y-1">
                 <p className="text-xs">Sardar Vallabhbhai National Institute of Technology, Surat</p>
-                <p className="text-xs">सरदार वल्लभभाई राष्ट्ीय प्रौद्योगिकी संस्थान, सूरत</p>
+               
                 <p className="text-xs">MTech : Construction Technology and Management</p>
                 <p className="text-xs">Department of Civil Engineering</p>
               </div>
